@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard | Mini ERP{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="h3 mb-1">Admin Dashboard</h1>
+        <p class="text-muted-soft mb-0">Overview of your organization.</p>
+    </div>
+</div>
+
+<div class="row mb-4 dashboard-row">
+    <div class="col-md-3">
+        <div class="card-metric p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="label mb-1">Total Employees</div>
+                    <div class="value">{{ stats.total_employees }}</div>
+                </div>
+                <div class="icon-pill bg-blue">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card-metric p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="label mb-1">Active Today</div>
+                    <div class="value">{{ stats.active_today }}</div>
+                </div>
+                <div class="icon-pill bg-green">
+                    <i class="bi bi-check2-circle"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card-metric p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="label mb-1">On Leave</div>
+                    <div class="value">{{ stats.on_leave }}</div>
+                </div>
+                <div class="icon-pill bg-yellow">
+                    <i class="bi bi-airplane-fill"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card-soft p-3">
+            <div class="card-soft-header mb-3">
+                <div>
+                    <div class="card-soft-title">Attendance (last 5 days)</div>
+                    <div class="text-muted-soft">
+                        {{ attendance_labels|join(', ') }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="mini-chart mb-2">
+                <div class="mini-chart-bars">
+                    {% for v in attendance_values %}
+                    <div class="mini-chart-bar" style="height: {{ 18 + v * 12 }}px"></div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <p class="small text-muted-soft mb-0">
+                Values: {{ attendance_values|join(', ') }}
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

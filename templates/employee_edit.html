@@ -1,0 +1,102 @@
+{# ==== employee_edit.html (UPDATED) ======================== #}
+{% extends "base.html" %}
+{% block title %}Edit Employee | Mini ERP{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="h3 mb-1">Edit Employee</h1>
+        <p class="text-muted-soft mb-0">Update employee details.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-7 col-xl-6">
+        <div class="card card-soft p-4">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="mb-3">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} py-2 px-3 mb-2 small">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <form method="post" novalidate>
+
+                {# NEW: Employee Code (optional) #}
+                <div class="mb-3">
+                    <label class="form-label small">Employee Code (optional)</label>
+                    <input type="text" name="emp_code" class="form-control"
+                           value="{{ emp.emp_code or '' }}"
+                           placeholder="e.g. 101, E001, HR-01">
+                    <div class="form-text small">
+                        Change this if you want a different custom ID for this employee.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small">Login Username</label>
+                    <input type="text" name="username" class="form-control"
+                           value="{{ emp.username }}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small">New Password (optional)</label>
+                    <div class="input-group">
+                        <input type="password" name="password" id="edit-password"
+                               class="form-control"
+                               placeholder="Leave blank to keep current password">
+                        <button type="button" class="btn btn-outline-secondary"
+                                onclick="toggleEditPassword()" tabindex="-1">
+                            👁
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small">Full Name</label>
+                    <input type="text" name="name" class="form-control"
+                           value="{{ emp.name }}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small">Role / Position</label>
+                    <input type="text" name="role" class="form-control"
+                           value="{{ emp.role }}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small">Status</label>
+                    {% set current_status = emp.status %}
+                    <select name="status" class="form-select">
+                        <option value="Active"   {% if current_status == 'Active' %}selected{% endif %}>Active</option>
+                        <option value="On Leave" {% if current_status == 'On Leave' %}selected{% endif %}>On Leave</option>
+                        <option value="Inactive" {% if current_status == 'Inactive' %}selected{% endif %}>Inactive</option>
+                    </select>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a href="{{ url_for('admin_employees') }}"
+                       class="btn btn-outline-light rounded-pill">
+                        Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary rounded-pill">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleEditPassword() {
+    const input = document.getElementById('edit-password');
+    input.type = (input.type === 'password') ? 'text' : 'password';
+}
+</script>
+{% endblock %}

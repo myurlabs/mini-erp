@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Employees | Mini ERP{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Employees</h1>
+        <p class="text-muted-soft mb-0">Manage all employees in your organization.</p>
+    </div>
+    <a href="{{ url_for('create_employee') }}" class="btn btn-primary rounded-pill">
+        + Add Employee
+    </a>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="mb-3">
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }} py-2 px-3 mb-2 small">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+
+<div class="card card-soft">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead class="small text-muted">
+            <tr>
+                <th scope="col">ID / Code</th>
+                <th scope="col">Username</th>
+                <th scope="col">Name</th>
+                <th scope="col">Role</th>
+                <th scope="col">Status</th>
+                <th scope="col" class="text-end">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for emp in employees %}
+            <tr>
+                <td>
+                    {% if emp.emp_code %}
+                        {{ emp.emp_code }}
+                    {% else %}
+                        {{ emp.id }}
+                    {% endif %}
+                </td>
+                <td>{{ emp.username }}</td>
+                <td>{{ emp.name }}</td>
+                <td>{{ emp.role }}</td>
+                <td>
+                    {% if emp.status == 'Active' %}
+                    <span class="badge bg-success-soft text-success small">Active</span>
+                    {% elif emp.status == 'On Leave' %}
+                    <span class="badge bg-warning-soft text-warning small">On Leave</span>
+                    {% else %}
+                    <span class="badge bg-secondary-soft text-secondary small">Inactive</span>
+                    {% endif %}
+                </td>
+                <td class="text-end">
+                    <a href="{{ url_for('edit_employee', emp_id=emp.id) }}"
+                       class="btn btn-sm btn-outline-primary rounded-pill me-1">
+                        Edit
+                    </a>
+                    <form method="post"
+                          action="{{ url_for('delete_employee', emp_id=emp.id) }}"
+                          class="d-inline"
+                          onsubmit="return confirm('Delete this employee?');">
+                        <button type="submit"
+                                class="btn btn-sm btn-outline-danger rounded-pill">
+                            Delete
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

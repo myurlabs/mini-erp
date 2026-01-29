@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Employee Profile | Mini ERP{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="h3 mb-1">Employee Profile</h1>
+        <p class="text-muted-soft mb-0">
+            Basic information about this employee. (Demo layout)
+        </p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div class="card card-soft p-4 text-center">
+            <div class="mb-3">
+                <div class="icon-pill bg-blue" style="width:64px;height:64px;font-size:2rem;">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+            </div>
+            <h2 class="h4 mb-1">
+                {{ emp.name if emp is defined else 'Employee Name' }}
+            </h2>
+            <p class="text-muted-soft mb-2">
+                {{ emp.role if emp is defined else 'Role / Position' }}
+            </p>
+            <span class="badge badge-pill
+                {% set st = (emp.status if emp is defined else 'Active') %}
+                {% if st == 'Active' %}
+                    bg-success
+                {% elif st == 'On Leave' %}
+                    bg-warning text-dark
+                {% else %}
+                    bg-secondary
+                {% endif %}
+            ">{{ st }}</span>
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        <div class="card card-soft p-4">
+            <h2 class="h6 text-uppercase text-muted-soft mb-3">Details</h2>
+            <div class="row mb-2">
+                <div class="col-sm-4 text-muted-soft small">Employee ID</div>
+                <div class="col-sm-8">
+                    {{ emp.id if emp is defined else '—' }}
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-sm-4 text-muted-soft small">Name</div>
+                <div class="col-sm-8">
+                    {{ emp.name if emp is defined else 'Employee Name' }}
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-sm-4 text-muted-soft small">Role</div>
+                <div class="col-sm-8">
+                    {{ emp.role if emp is defined else 'Role / Position' }}
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-sm-4 text-muted-soft small">Status</div>
+                <div class="col-sm-8">
+                    {{ st }}
+                </div>
+            </div>
+
+            <hr class="border-secondary my-3">
+
+            <p class="text-muted-soft small mb-0">
+                This is a static demo profile. In a real app, you would load complete
+                employee data from the database and show contact, department, and other fields here.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

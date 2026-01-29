@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Employee Dashboard | Mini ERP{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="h3 mb-1">Welcome, {{ user }}</h1>
+        <p class="text-muted-soft mb-0">Here are your tasks.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card card-soft">
+            <div class="card-header border-0 pb-0">
+                <h2 class="h6 mb-0">Tasks</h2>
+            </div>
+            <div class="card-body">
+                {% if tasks %}
+                <ul class="list-group list-group-flush">
+                    {% for t in tasks %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>{{ t.title }}</span>
+                        <span class="badge bg-secondary-soft text-secondary small">
+                            {{ t.status }}
+                        </span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted small mb-0">
+                    No tasks assigned yet. Please contact your admin.
+                </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Edit Profile | Mini ERP{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="h3 mb-1">Edit Profile</h1>
+        <p class="text-muted-soft mb-0">
+            Update your personal information. (Demo layout – backend not wired)
+        </p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-7 col-xl-6">
+        <div class="card card-soft p-4">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="mb-3">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} py-2 px-3 mb-2 small">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            {# Future: pass logged-in employee object as 'emp' #}
+            <form method="post" novalidate>
+                <div class="mb-3">
+                    <label class="form-label small">Full Name</label>
+                    <input type="text" name="name" class="form-control"
+                           value="{{ emp.name if emp is defined else '' }}"
+                           placeholder="Your full name" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small">Email</label>
+                    <input type="email" name="email" class="form-control"
+                           value="{{ emp.email if emp is defined else '' }}"
+                           placeholder="you@example.com">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small">Phone</label>
+                    <input type="text" name="phone" class="form-control"
+                           value="{{ emp.phone if emp is defined else '' }}"
+                           placeholder="+91‑XXXXXXXXXX">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small">Role / Position</label>
+                    <input type="text" name="role" class="form-control"
+                           value="{{ emp.role if emp is defined else '' }}"
+                           placeholder="Your role">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small">Status</label>
+                    {% set current_status = emp.status if emp is defined else 'Active' %}
+                    <select name="status" class="form-select">
+                        <option value="Active" {% if current_status == 'Active' %}selected{% endif %}>Active</option>
+                        <option value="On Leave" {% if current_status == 'On Leave' %}selected{% endif %}>On Leave</option>
+                        <option value="Inactive" {% if current_status == 'Inactive' %}selected{% endif %}>Inactive</option>
+                    </select>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a href="{{ url_for('employee_dashboard') }}"
+                       class="btn btn-outline-light rounded-pill">
+                        Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary rounded-pill">
+                        Save Profile
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

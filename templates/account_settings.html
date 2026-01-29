@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Account Settings | Mini ERP{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="h3 mb-1">Account Settings</h1>
+        <p class="text-muted-soft mb-0">Update your username, email and password.</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7 col-xl-6">
+        <div class="card card-soft p-4">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="mb-3">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} py-2 px-3 mb-2 small">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <form method="post" novalidate>
+                <div class="mb-3">
+                    <label class="form-label small">Username</label>
+                    <input type="text" class="form-control" name="username"
+                           value="{{ user }}" placeholder="Your username" disabled>
+                    <div class="form-text text-muted-soft">
+                        Username is fixed for this demo account.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small">Email</label>
+                    <input type="email" class="form-control" name="email"
+                           placeholder="you@example.com">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small">New Password</label>
+                    <input type="password" class="form-control" name="password"
+                           placeholder="Leave blank to keep current">
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary rounded-pill px-4">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-lg-5 col-xl-4">
+        <div class="card card-soft p-3">
+            <div class="d-flex align-items-center mb-3">
+                <div class="icon-pill bg-blue me-3">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+                <div>
+                    <div class="small text-uppercase text-muted-soft">Logged in as</div>
+                    <div class="fw-semibold">{{ user|upper }}</div>
+                </div>
+            </div>
+            <ul class="list-unstyled mb-0 small text-muted-soft">
+                <li class="mb-1">
+                    <span class="text-white-50">Role:</span> {{ role }}
+                </li>
+                <li class="mb-1">
+                    <span class="text-white-50">Session:</span> Active
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

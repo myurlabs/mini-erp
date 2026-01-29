@@ -1,0 +1,138 @@
+{# templates/admin_tasks.html #}
+{% extends "base.html" %}
+{% block title %}Tasks | Mini ERP{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="h3 mb-1">Tasks</h1>
+            <p class="text-muted-soft mb-0">Assign and manage employee tasks.</p>
+        </div>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-light rounded-pill">
+            Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- LEFT: Assign / update task -->
+    <div class="col-lg-6">
+        <div class="card card-soft p-4 mb-4">
+            <h2 class="h6 mb-3">Assign / update task</h2>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="mb-3">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} py-2 px-3 mb-2 small">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <form method="post">
+                <div class="mb-3">
+                    <label class="form-label small">Employee</label>
+                    <select name="employee_id" class="form-select" required>
+                        <option value="">Select employee</option>
+                        {% for emp in employees %}
+                        <option value="{{ emp.id }}">{{ emp.name }} ({{ emp.username }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small">Task title</label>
+                    <input type="text" name="title" class="form-control"
+                           placeholder="e.g. Complete monthly report" required>
+                    <div class="form-text small">
+                        Same employee + same title par submit karoge to status update hoga, naya row nahi banega.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small">Status</label>
+                    <select name="status" class="form-select">
+                        <option value="Pending">Pending</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Done">Done</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small">Due date (optional)</label>
+                    <input type="date" name="due_date" class="form-control">
+                </div>
+
+                <button type="submit" class="btn btn-primary rounded-pill">
+                    Save Task
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- RIGHT: List all tasks -->
+    <div class="col-lg-6">
+        <div class="card card-soft p-4">
+            <h2 class="h6 mb-3">All tasks</h2>
+            <div class="table-responsive">
+                <table class="table table-sm align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Title</th>
+                            <th>Status</th>
+                            <th>Due</th>
+                            <th style="width: 150px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for task in tasks %}
+                        <tr>
+                            <td>{{ task.employee.name }}</td>
+                            <td>{{ task.title }}</td>
+                            <td>{{ task.status }}</td>
+                            <td>
+                                {% if task.due_date %}
+                                    {{ task.due_date.strftime('%d-%m-%Y') }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                <form method="post"
+                                      action="{{ url_for('admin_task_reset', task_id=task.id) }}"
+                                      style="display:inline;">
+                                    <button type="submit"
+                                            class="btn btn-sm btn-outline-warning rounded-pill mb-1">
+                                        Reset
+                                    </button>
+                                </form>
+                                <form method="post"
+                                      action="{{ url_for('admin_task_delete', task_id=task.id) }}"
+                                      style="display:inline;"
+                                      onsubmit="return confirm('Delete this task?');">
+                                    <button type="submit"
+                                            class="btn btn-sm btn-outline-danger rounded-pill mb-1">
+                                        Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-muted small">
+                                No tasks yet. Use the form to assign a task.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

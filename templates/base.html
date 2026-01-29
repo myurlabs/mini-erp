@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}Mini ERP{% endblock %}</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap core -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Custom styles (light theme) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='custom.css') }}">
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow-sm">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand fw-semibold" href="{{ url_for('index') }}">
+            <i class="bi bi-bar-chart-line me-1"></i> Mini ERP
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNavbar">
+            {% if session.get("user_id") %}
+            <ul class="navbar-nav me-auto">
+                {% if session.get("role") == "admin" %}
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}"
+                       href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint in ['admin_employees','create_employee','edit_employee'] %}active{% endif %}"
+                       href="{{ url_for('admin_employees') }}">Employees</a>
+                </li>
+
+                {# NEW: admin ke liye Tasks & Attendance #}
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint == 'admin_tasks' %}active{% endif %}"
+                       href="{{ url_for('admin_tasks') }}">Tasks</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint in ['admin_attendance_list','admin_attendance_reset'] %}active{% endif %}"
+                       href="{{ url_for('admin_attendance_list') }}">Attendance</a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint == 'employee_dashboard' %}active{% endif %}"
+                       href="{{ url_for('employee_dashboard') }}">My Dashboard</a>
+                </li>
+                {% endif %}
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item d-flex align-items-center me-2">
+                    <span class="small text-white-50">
+                        {{ session.get("username")|upper }} ({{ session.get("role") }})
+                    </span>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('account_settings') }}">
+                        <i class="bi bi-person-gear"></i>
+                    </a>
+                </li>
+                <li class="nav-item ms-1">
+                    <a class="btn btn-sm btn-outline-light rounded-pill" href="{{ url_for('logout') }}">
+                        Logout
+                    </a>
+                </li>
+            </ul>
+            {% else %}
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="btn btn-sm btn-outline-light rounded-pill" href="{{ url_for('login') }}">
+                        Login
+                    </a>
+                </li>
+            </ul>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+{% endblock %}
+
+<main class="main-wrapper bg-login">
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+</main>
+
+{% if not hide_developer %}
+<footer class="py-3 text-center small text-muted-soft">
+    Developer: <span class="fw-semibold">Myur Devraj</span>
+</footer>
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

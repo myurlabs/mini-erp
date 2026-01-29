@@ -1,0 +1,287 @@
+/* ==== GLOBAL LAYOUT (LIGHT THEME) ==== */
+:root {
+    --bg-gradient: radial-gradient(circle at 0% 0%, #e0f2ff 0, #f9fafb 40%, #eef2ff 100%);
+    --card-bg: rgba(255, 255, 255, 0.9);
+    --border-soft: rgba(148, 163, 184, 0.4);
+    --text-main: #111827;
+    --text-muted: #6b7280;
+    --accent: #3b82f6;
+}
+
+body {
+    margin: 0;
+    background: #f3f4f6;
+    color: var(--text-main);
+    min-height: 100vh;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* fixed navbar ke niche safe gap */
+.main-wrapper {
+    padding-top: 88px;
+    padding-bottom: 40px;
+}
+
+.container {
+    max-width: 1200px;
+}
+
+/* ==== NAVBAR (LIGHT GLASS) ==== */
+.navbar.bg-dark {
+    background: linear-gradient(90deg, #020617, #0f172a) !important;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.35);
+    border-bottom: 1px solid rgba(30, 64, 175, 0.45);
+}
+
+.navbar-brand {
+    letter-spacing: 0.04em;
+    font-size: 1rem;
+}
+
+.navbar .nav-link {
+    font-size: 0.88rem;
+    color: #e5e7eb !important;
+    opacity: 0.8;
+}
+
+.navbar .nav-link.active,
+.navbar .nav-link:hover {
+    opacity: 1;
+    color: #ffffff !important;
+}
+
+/* ==== LOGIN BACKGROUND (LIGHT GLASS) ==== */
+.bg-login {
+    background-image: var(--bg-gradient);
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+/* ==== GLASS LOGIN CARD (LIGHT) ==== */
+.login-glass-card {
+    width: 100%;
+    max-width: 380px;
+    border-radius: 20px;
+    padding: 28px 26px 26px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.85), rgba(255,255,255,0.98));
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    box-shadow:
+        0 18px 45px rgba(15, 23, 42, 0.15),
+        0 0 0 1px rgba(148, 163, 184, 0.08);
+    backdrop-filter: blur(18px);
+}
+
+.login-glass-card .form-control {
+    background: rgba(249, 250, 251, 0.95);
+    border-radius: 12px;
+    border-color: rgba(148, 163, 184, 0.7);
+    color: var(--text-main);
+    font-size: 0.9rem;
+}
+
+.login-glass-card .form-control:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.35);
+}
+
+.login-glass-card label {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.login-glass-card .btn-primary {
+    border-radius: 999px;
+    background: linear-gradient(to right, #3b82f6, #6366f1);
+    border: none;
+    font-weight: 500;
+}
+
+/* ==== DASHBOARD CARDS (LIGHT GLASS) ==== */
+.card-soft,
+.card-metric {
+    background: var(--card-bg);
+    border-radius: 18px;
+    border: 1px solid var(--border-soft);
+    box-shadow:
+        0 18px 40px rgba(15, 23, 42, 0.06),
+        0 0 0 1px rgba(209, 213, 219, 0.6);
+    color: var(--text-main);
+}
+
+.card-metric {
+    position: relative;
+    overflow: hidden;
+}
+
+.card-metric::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 0% 0%, rgba(59,130,246,0.15), transparent 55%);
+    opacity: 0.9;
+    pointer-events: none;
+}
+
+.card-metric .label {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+}
+
+.card-metric .value {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+/* ==== ICON PILLS (LIGHT) ==== */
+.icon-pill {
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+.icon-pill.bg-green {
+    background: rgba(22, 163, 74, 0.12);
+    color: #15803d;
+}
+
+.icon-pill.bg-blue {
+    background: rgba(59, 130, 246, 0.12);
+    color: #1d4ed8;
+}
+
+.icon-pill.bg-yellow {
+    background: rgba(234, 179, 8, 0.14);
+    color: #92400e;
+}
+
+.icon-pill.bg-red {
+    background: rgba(239, 68, 68, 0.14);
+    color: #b91c1c;
+}
+
+/* ==== MINI CHART (LIGHT) ==== */
+.mini-chart {
+    height: 90px;
+    border-radius: 14px;
+    background: radial-gradient(circle at 10% 0%, rgba(59,130,246,0.18), transparent 45%),
+                radial-gradient(circle at 90% 100%, rgba(236,72,153,0.18), transparent 45%),
+                linear-gradient(135deg, #eef2ff, #e0f2fe);
+    position: relative;
+    overflow: hidden;
+}
+
+.mini-chart-bars {
+    position: absolute;
+    inset: 10px 14px 10px 14px;
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.mini-chart-bar {
+    flex: 1;
+    border-radius: 999px;
+    background: linear-gradient(to top, rgba(96, 165, 250, 0.25), rgba(37, 99, 235, 0.95));
+}
+
+/* ==== TABLES / BADGES (LIGHT) ==== */
+.table-dark-soft {
+    --bs-table-bg: rgba(255, 255, 255, 0.95);
+    --bs-table-border-color: rgba(209, 213, 219, 0.9);
+    --bs-table-striped-bg: #f9fafb;
+    --bs-table-hover-bg: #e5e7eb;
+    color: var(--text-main);
+}
+
+.badge-pill {
+    border-radius: 999px;
+    padding: 0.35rem 0.6rem;
+    font-size: 0.7rem;
+}
+
+.bg-success-soft {
+    background-color: rgba(34, 197, 94, 0.12) !important;
+    color: #16a34a !important;
+}
+
+.bg-warning-soft {
+    background-color: rgba(234, 179, 8, 0.16) !important;
+    color: #b45309 !important;
+}
+
+.bg-secondary-soft {
+    background-color: rgba(148, 163, 184, 0.18) !important;
+    color: #374151 !important;
+}
+
+/* ==== FORMS & BUTTONS ==== */
+.form-control,
+.form-select {
+    border-radius: 12px;
+    border: 1px solid rgba(148, 163, 184, 0.6);
+    background: #f9fafb;
+    color: var(--text-main);
+}
+
+.form-control::placeholder {
+    color: #9ca3af;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.35);
+    background: #ffffff;
+}
+
+.btn-primary {
+    border-radius: 999px;
+    background: linear-gradient(135deg, #3b82f6, #6366f1);
+    border: none;
+    box-shadow: 0 12px 30px rgba(59, 130, 246, 0.35);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #2563eb, #4f46e5);
+}
+
+.btn-outline-light {
+    border-radius: 999px;
+}
+
+/* ==== ALERTS ==== */
+.alert {
+    border-radius: 12px;
+    border: 1px solid transparent;
+    background: #f9fafb;
+    color: var(--text-main);
+    font-size: 0.82rem;
+}
+
+.alert-danger {
+    border-color: rgba(239, 68, 68, 0.7);
+}
+
+.alert-success {
+    border-color: rgba(34, 197, 94, 0.7);
+}
+
+.alert-info {
+    border-color: rgba(59, 130, 246, 0.7);
+}
+
+/* ==== SMALL UTILITIES ==== */
+.text-muted-soft {
+    color: var(--text-muted) !important;
+    font-size: 0.8rem;
+}
+
+.dashboard-row {
+    row-gap: 1.5rem;
+}

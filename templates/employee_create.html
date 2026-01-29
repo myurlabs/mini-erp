@@ -1,0 +1,99 @@
+{# ==== employee_create.html (UPDATED) ======================= #}
+{% extends "base.html" %}
+{% block title %}Add Employee | Mini ERP{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="h3 mb-1">Add Employee</h1>
+        <p class="text-muted-soft mb-0">Create a new employee record.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-7 col-xl-6">
+        <div class="card card-soft p-4">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="mb-3">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} py-2 px-3 mb-2 small">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <form method="post" novalidate>
+
+                {# NEW: Employee Code (optional) #}
+                <div class="mb-3">
+                    <label class="form-label small">Employee Code (optional)</label>
+                    <input type="text" name="emp_code" class="form-control"
+                           placeholder="e.g. 101, E001, HR-01">
+                    <div class="form-text small">
+                        You can set your own ID here. Leave empty if not needed.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small">Login Username</label>
+                    <input type="text" name="username" class="form-control"
+                           placeholder="e.g. rahul" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small">Login Password</label>
+                    <div class="input-group">
+                        <input type="password" name="password" id="emp-password"
+                               class="form-control" placeholder="e.g. rahul@123" required>
+                        <button type="button" class="btn btn-outline-secondary"
+                                onclick="toggleEmpPassword()" tabindex="-1">
+                            👁
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small">Full Name</label>
+                    <input type="text" name="name" class="form-control"
+                           placeholder="Rahul Sharma" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small">Role / Position</label>
+                    <input type="text" name="role" class="form-control"
+                           placeholder="Software Engineer" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small">Status</label>
+                    <select name="status" class="form-select">
+                        <option value="Active">Active</option>
+                        <option value="On Leave">On Leave</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a href="{{ url_for('admin_employees') }}"
+                       class="btn btn-outline-light rounded-pill">
+                        Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary rounded-pill">
+                        Save Employee
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleEmpPassword() {
+    const input = document.getElementById('emp-password');
+    input.type = (input.type === 'password') ? 'text' : 'password';
+}
+</script>
+{% endblock %}
