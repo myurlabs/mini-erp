@@ -1,4 +1,4 @@
-# ==== app.py (FINAL with emp_code) ========================
+# ==== app.py (FINAL with separate real & demo admins + demo lock) =============
 
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from functools import wraps
@@ -24,12 +24,12 @@ db = SQLAlchemy(app)
 
 class Employee(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    emp_code = db.Column(db.String(32), unique=True, nullable=True)   # custom ID (optional)
-    username = db.Column(db.String(64), unique=True, nullable=False)  # login username
-    password_hash = db.Column(db.String(255), nullable=False)         # hashed password
+    emp_code = db.Column(db.String(32), unique=True, nullable=True)
+    username = db.Column(db.String(64), unique=True, nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
     name = db.Column(db.String(120), nullable=False)
-    role = db.Column(db.String(80), nullable=False)                   # 'admin' / 'employee'
-    status = db.Column(db.String(20), default="Active")               # Active / On Leave / Inactive
+    role = db.Column(db.String(80), nullable=False)           # 'admin' / 'employee'
+    status = db.Column(db.String(20), default="Active")       # Active / On Leave / Inactive
 
     def set_password(self, password: str):
         self.password_hash = generate_password_hash(password)
@@ -51,7 +51,7 @@ class Attendance(db.Model):
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
-    status = db.Column(db.String(20), default="Pending")  # Pending / In Progress / Done
+    status = db.Column(db.String(20), default="Pending")
     due_date = db.Column(db.Date, nullable=True)
 
     employee_id = db.Column(db.Integer, db.ForeignKey("employee.id"), nullable=False)
@@ -59,6 +59,8 @@ class Task(db.Model):
 
 
 # ---------- HELPERS ----------
+
+DEMO_USERNAMES = ["demo_admin", "rahul", "priya", "amit"]
 
 def login_required(role=None):
     def wrapper(f):
@@ -74,30 +76,66 @@ def login_required(role=None):
     return wrapper
 
 
+def reset_demo_data_for_user(emp: Employee):
+    """Demo users ke liye dashboard data har login par reset kare."""
+    if emp.username not in DEMO_USERNAMES:
+        return
+
+    if emp.role == "employee":
+        # demo employee ka pura data clean karke ek simple task de do
+        Task.query.filter_by(employee_id=emp.id).delete()
+        Attendance.query.filter_by(employee_id=emp.id).delete()
+
+        demo_task = Task(
+            title="Demo Task",
+            status="Pending",
+            due_date=None,
+            employee_id=emp.id,
+        )
+        db.session.add(demo_task)
+
+    db.session.commit()
+
+
 def init_db():
     """
-    Real mode:
-    - sirf tables create karega (drop_all nahi).
-    - agar admin/seed employees nahi hain tab hi create karega.
-    Isse data restart ke baad bhi safe rahega.
+    - Tables create karega (drop_all nahi).
+    - Agar admins / seed employees nahi hain tab hi create karega.
+    - REAL admin password env var se aata hai (ADMIN_PASSWORD).
     """
     db.create_all()
 
-    # default admin
-    admin = Employee.query.filter_by(username="admin").first()
-    if not admin:
-        admin = Employee(
-            emp_code="ADM-1",
+    # -------- REAL ADMIN (production) --------
+    real_admin = Employee.query.filter_by(username="admin").first()
+    if not real_admin:
+        real_password = os.environ.get("ADMIN_PASSWORD", "Admin@2026_REAL")
+
+        real_admin = Employee(
+            emp_code="ADM-REAL",
             username="admin",
-            name="Admin User",
+            name="Real Admin",
             role="admin",
             status="Active",
             password_hash=""
         )
-        admin.set_password("admin123")
-        db.session.add(admin)
+        real_admin.set_password(real_password)
+        db.session.add(real_admin)
 
-    # starter employees sirf tab jab koi employee nahi hai
+    # -------- DEMO ADMIN (testing) --------
+    demo_admin = Employee.query.filter_by(username="demo_admin").first()
+    if not demo_admin:
+        demo_admin = Employee(
+            emp_code="ADM-DEMO",
+            username="demo_admin",
+            name="Demo Admin",
+            role="admin",
+            status="Active",
+            password_hash=""
+        )
+        demo_admin.set_password("admin_demo_123")
+        db.session.add(demo_admin)
+
+    # -------- DEMO EMPLOYEES (sirf jab koi employee nahi) --------
     employee_count = Employee.query.filter_by(role="employee").count()
     if employee_count == 0:
         e1 = Employee(
@@ -147,7 +185,6 @@ def index():
     return redirect(url_for("login"))
 
 
-# --- Login ---
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -161,7 +198,9 @@ def login():
             session["username"] = emp.username
             session["role"] = emp.role
 
-            # Attendance mark for employees
+            # demo users ka data reset
+            reset_demo_data_for_user(emp)
+
             if emp.role == "employee":
                 today = date.today()
                 record = Attendance.query.filter_by(
@@ -183,7 +222,6 @@ def login():
     return render_template("login.html")
 
 
-# --- Logout ---
 @app.route("/logout")
 def logout():
     user_id = session.get("user_id")
@@ -207,7 +245,6 @@ def logout():
     return redirect(url_for("login"))
 
 
-# --- Admin dashboard ---
 @app.route("/admin/dashboard")
 @login_required(role="admin")
 def admin_dashboard():
@@ -236,29 +273,23 @@ def admin_dashboard():
         )
         values.append(c)
 
-    attendance_labels = labels
-    attendance_values = values
-
     return render_template(
         "admin_dashboard.html",
         stats=stats,
-        attendance_labels=attendance_labels,
-        attendance_values=attendance_values,
+        attendance_labels=labels,
+        attendance_values=values,
     )
 
 
-# --- Employee dashboard (REAL TASKS) ---
 @app.route("/employee/dashboard")
 @login_required(role="employee")
 def employee_dashboard():
     user_id = session.get("user_id")
     emp = Employee.query.get(user_id)
-
     tasks = Task.query.filter_by(employee_id=emp.id).order_by(Task.id.desc()).all()
     return render_template("employee_dashboard.html", user=emp.username, tasks=tasks)
 
 
-# --- Employees list (admin) ---
 @app.route("/admin/employees")
 @login_required(role="admin")
 def admin_employees():
@@ -266,12 +297,11 @@ def admin_employees():
     return render_template("employee_list.html", employees=employees)
 
 
-# --- Create employee (admin) ---
 @app.route("/admin/employees/create", methods=["GET", "POST"])
 @login_required(role="admin")
 def create_employee():
     if request.method == "POST":
-        emp_code = request.form.get("emp_code", "").strip()      # NEW
+        emp_code = request.form.get("emp_code", "").strip()
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "").strip()
         name = request.form.get("name", "").strip()
@@ -308,7 +338,6 @@ def create_employee():
     return render_template("employee_create.html")
 
 
-# --- Edit employee (admin) ---
 @app.route("/admin/employees/<int:emp_id>/edit", methods=["GET", "POST"])
 @login_required(role="admin")
 def edit_employee(emp_id):
@@ -318,7 +347,7 @@ def edit_employee(emp_id):
         return redirect(url_for("admin_employees"))
 
     if request.method == "POST":
-        emp_code = request.form.get("emp_code", "").strip()      # NEW
+        emp_code = request.form.get("emp_code", "").strip()
         username = request.form.get("username", "").strip()
         name = request.form.get("name", "").strip()
         role_ = request.form.get("role", "").strip()
@@ -356,7 +385,6 @@ def edit_employee(emp_id):
     return render_template("employee_edit.html", emp=emp)
 
 
-# --- Delete employee (admin) ---
 @app.route("/admin/employees/<int:emp_id>/delete", methods=["POST"])
 @login_required(role="admin")
 def delete_employee(emp_id):
@@ -369,11 +397,9 @@ def delete_employee(emp_id):
         db.session.delete(emp)
         db.session.commit()
         flash("Employee deleted.", "success")
-
     return redirect(url_for("admin_employees"))
 
 
-# --- Admin: Tasks assign/view (assign + update same row) ---
 @app.route("/admin/tasks", methods=["GET", "POST"])
 @login_required(role="admin")
 def admin_tasks():
@@ -422,7 +448,6 @@ def admin_tasks():
     return render_template("admin_tasks.html", employees=employees, tasks=all_tasks)
 
 
-# --- Admin: reset/delete single task ---
 @app.route("/admin/tasks/<int:task_id>/reset", methods=["POST"])
 @login_required(role="admin")
 def admin_task_reset(task_id):
@@ -449,7 +474,6 @@ def admin_task_delete(task_id):
     return redirect(url_for("admin_tasks"))
 
 
-# --- Admin: Attendance view + reset ---
 @app.route("/admin/attendance")
 @login_required(role="admin")
 def admin_attendance_list():
@@ -494,18 +518,45 @@ def admin_attendance_reset(att_id):
     return redirect(request.referrer or url_for("admin_attendance_list"))
 
 
-# --- Account settings (simple) ---
+# ===== UPDATED ACCOUNT SETTINGS ROUTE =====
+
 @app.route("/account/settings", methods=["GET", "POST"])
 @login_required()
 def account_settings():
-    username = session.get("username")
+    user_id = session.get("user_id")
     role = session.get("role")
 
+    user = Employee.query.get(user_id)
+    if not user:
+        flash("User not found.", "danger")
+        return redirect(url_for("login"))
+
+    is_demo_user = user.username in DEMO_USERNAMES
+
     if request.method == "POST":
-        flash("Account settings updated.", "success")
+        if is_demo_user:
+            flash("Demo accounts cannot change password or email.", "warning")
+            return redirect(url_for("account_settings"))
+
+        new_email = request.form.get("email", "").strip()
+        new_password = request.form.get("password", "").strip()
+
+        if new_email:
+            user.email = new_email
+
+        if new_password:
+            user.set_password(new_password)
+
+        db.session.commit()
+        flash("Account settings updated successfully.", "success")
         return redirect(url_for("account_settings"))
 
-    return render_template("account_settings.html", user=username, role=role)
+    return render_template(
+        "account_settings.html",
+        user=user.username,
+        role=role,
+        is_demo_user=is_demo_user,
+    )
 
 
 # ---------- MAIN ----------
