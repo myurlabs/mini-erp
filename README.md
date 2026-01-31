@@ -4,6 +4,15 @@
 
 Full-stack demo built with Flask where admins manage employees and employees can login to view their profiles. Deployed on Railway with SQLAlchemy ORM.
 
+## 🔐 Demo Login Credentials
+
+**👨‍💼 ADMIN LOGIN**  
+`Username: demo_admin` | `Password: admin_demo_123`
+
+**👷‍♂️ EMPLOYEE LOGIN** *(All employees - same credentials)*  
+`Username: admin@1234` | `Password: admin@1234`  
+*(Admin login karke employee list me exact usernames milenge)*
+
 ## 🚀 Live Demo
 [Launch Mini ERP Demo](https://web-production-fb14be.up.railway.app/)
 
@@ -15,6 +24,6 @@ Full-stack demo built with Flask where admins manage employees and employees can
 
 ## ✨ Features
 - Admin employee management
-- Employee login & profile view
+- Employee login & profile view  
 - Session-based authentication
 - Responsive design
