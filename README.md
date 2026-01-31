@@ -10,7 +10,7 @@ Full-stack demo built with Flask where admins manage employees and employees can
 `Username: demo_admin` | `Password: admin_demo_123`
 
 **👷‍♂️ EMPLOYEE LOGIN** *(All employees - same credentials)*  
-`Username: admin@1234` | `Password: admin@1234`  
+`Username: `Password: admin@1234`  
 *(Admin login karke employee list me exact usernames milenge)*
 
 ## 🚀 Live Demo
