@@ -14,7 +14,7 @@ Full-stack demo built with Flask where admins manage employees and employees can
 *(Admin login karke employee list me exact usernames milenge)*
 
 ## 🚀 Live Demo
-[Launch Mini ERP Demo](https://web-production-fb14be.up.railway.app/)
+[Launch Mini ERP Demo](https://mini-erp-beta.vercel.app/)
 
 ## 🛠 Tech Stack
 - **Backend:** Python Flask + SQLAlchemy
